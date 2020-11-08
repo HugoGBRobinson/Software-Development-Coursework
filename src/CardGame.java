@@ -2,45 +2,13 @@ import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class CardGame extends Thread {
-
-    int num;
-    boolean waiting;
-
-    public CardGame(int Num, boolean Waiting) {
-        num = Num;
-        waiting = Waiting;
-    }
-
-    public synchronized void run() {
-
-        Player player = new Player(num);
-        while (waiting == true) {
-            try {
-                this.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println("Hello from a thread! " + num);
-        waiting = true;
-        notifyAll();
-
-        try {
-            this.wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+public class CardGame{
 
         //Player instance
         //Card's Instances
         //Checking (Out to external func)
         //Winning?
         //Restart thread
-
-
-    }
 
     public static void main(String[] args) throws InterruptedException {
         //needs number of players
@@ -56,34 +24,46 @@ public class CardGame extends Thread {
 
         //Fill decks
         //Start threads for players
-        Moniter moniter = new Moniter(1); //Moniter for threads
-        Card decksOfCards[] = new Card[4]; //Needs looking at as to wether it should be of type Card or Deck of cards?
+        CardDeck decksOfCards[] = new CardDeck[numberOfPlayers]; //Needs looking at as to wether it should be of type Card or Deck of cards?
         Player threads[] = new Player[numberOfPlayers];
+        List<List<Card>> listsOFDeckNums = CreateDecksNums(numberOfPlayers);
+        Monitor monitor = new Monitor();
+        //Needs to be changed into a round robbin
+        for (int i = 0; i < numberOfPlayers; i++) {
+            decksOfCards[i] = new CardDeck(i, listsOFDeckNums.remove(0));
+        }
         //Creates player objects and puts them in a list
         for (int i = 0; i < numberOfPlayers; i++) {
-            threads[i] = new Player(i+1);
-        }
-        //Once player objects are created this then populates them with required data
-        for (int i = 0; i < numberOfPlayers; i++) {
-            if (i==0){threads[i].addWaitandNotifiers(threads[threads.length-1],threads[i+1],moniter);}
-            else if (i == threads.length-1){threads[i].addWaitandNotifiers(threads[i-1],threads[0],moniter);}
-            else {threads[i].addWaitandNotifiers(threads[i-1],threads[i+1],moniter);}
+            if (i == threads.length-1){threads[i] = new Player(i+1, decksOfCards[i], decksOfCards[0], listsOFDeckNums.remove(0),monitor);}
+            else {threads[i] = new Player(i+1, decksOfCards[i], decksOfCards[i+1], listsOFDeckNums.remove(0),monitor);}
         }
         //Makes and starts the threads
-        for (int i = threads.length -1; i > -1; i--) {
+        for (int i = 0; i < threads.length; i++) {
             Thread player = new Thread(threads[i]);
             System.out.println("Starting Thread "+ i);
             player.start();
         }
+    }
+    public static List<List<Card>> CreateDecksNums(int numOfDecks){
+        List<Integer> pack = ReadFileFake(numOfDecks);
+        List<List<Card>> listOFDeckNums = new ArrayList<List<Card>>();
+        for (int i = 0; i < numOfDecks*2; i++) {
+            List<Card> deckNums = new ArrayList<Card>();
+            for (int x = 0; x < 4; x++) {
+                deckNums.add(new Card(pack.remove(0)));
+            }
+            listOFDeckNums.add(deckNums);
+        }
+        return  listOFDeckNums;
     }
     //For testing
     public static List<Integer> ReadFileFake(int num){
         Random random = new Random();
         List<Integer> pack = new ArrayList<Integer>();
         for (int i = 0; i < (8*num); i++) {
-            pack.add(random.nextInt(15));
+            pack.add(random.nextInt(10));
         }
-        return  pack;
+        return pack;
     }
     //Not needed yet
     public static Queue<String> ReadFile(String fileName) {
@@ -103,81 +83,127 @@ public class CardGame extends Thread {
     }
 }
 
-class Player implements Runnable{
+class Player implements Runnable {
     //For thread saftey the instance methods here must be syncronised
     int num;
-    Player playerWaitingFor;
-    Player playerNotifing;
-    List<Integer> cards;
-    Moniter moniter;
+    List<Card> cards;
+    CardDeck leftDeck;
+    CardDeck rightDeck;
+    Monitor monitor;
 
-    public Player(int Num) {
+    public Player(int Num, CardDeck leftDeck, CardDeck rightDeck, List<Card> cards, Monitor monitor) {
         num = Num;
+        this.leftDeck = leftDeck;
+        this.rightDeck = rightDeck;
+        this.cards = cards;
+        this.monitor = monitor;
     }
-    public void addWaitandNotifiers(Player playerWaitingFor, Player playerNotifing, Moniter moniter){
-        this.playerWaitingFor = playerWaitingFor;
-        this.playerNotifing = playerNotifing;
-        this.moniter = moniter;
-    }
-
-    private synchronized void isWaiting() throws InterruptedException {
-        //Syncronised on an external moniter too allow data transfer between threads and wait/notify to work
-        synchronized (moniter){
-            while (true){
-                if (moniter.player == num){
-                    moniter.changePlayer(playerNotifing.num);
-                    System.out.println("Player " + num + " Running");
-                    //Once notified then wait
-                    moniter.notify();
-                    moniter.wait();
-                }
-                else{
-                    //Not sure why but this print statment needs to be here to let the one above show for more than 1 thread
-                    System.out.println(num + " is waiting");
-                    moniter.wait();
-                }
-            }
-        }
-    }
-
-
-    private void addCard(int card){
+        private void addCard(Card card){
         cards.add(card);
     }
 
-    private void isWon(){
-        //Not implimented
+    private boolean checkIfAllElementsAreEqual(){
+        for (Card card : cards) {
+            for (int i = 0; i < 4; i++) {
+                if (card.cardNum != cards.get(i).cardNum)
+                    return false;
+            }
+        }
+        return true;
+
+    }
+
+    private boolean isWon(){
+        if (checkIfAllElementsAreEqual() == true){return true;}
+        return false;
+    }
+
+    private List<Integer> returnHand() {
+        List<Integer> hand = new ArrayList<Integer>();
+        for (Card card: cards) {
+            hand.add(card.cardNum);
+        }
+        return hand;
     }
 
     @Override
     public void run(){
-        try {
-            isWaiting();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+        System.out.println("player "+ num + " current hand is " + returnHand().toString());
+        synchronized (monitor){
+                while (true){
+                    if (isWon()){System.out.println(num + " has won"); monitor.addWinner(num);break;}
+                    if (monitor.isWon == true){
+                        System.out.println("Player " + monitor.winner + " has informed player " + num + " that they have won");
+                        break;
+                    }
+                    try {
+                        Card newCard = leftDeck.removeCardFromDeck();
+                        cards.add(newCard);
+                        System.out.println("player "+ num + " draws a " + newCard.cardNum + " from deck " + leftDeck.deckNum);
 
+                    } catch (IndexOutOfBoundsException e){
+                        try {
+                            monitor.wait();
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    if (cards.size() == 5){
+                        Card cardToRemove = cards.remove(0);
+                        rightDeck.addCardToDeck(cardToRemove);
+                        System.out.println("player "+ num + " discards a " + cardToRemove.cardNum + " to deck " + rightDeck.deckNum);
+                        monitor.notifyAll();
+
+                    }
+                    System.out.println("player "+ num + " current hand is " + returnHand().toString());
+                    if (isWon())
+                    {
+                        System.out.println("player " + num + " wins ");
+                        System.out.println("player " + num + " exits ");
+                        System.out.println("player " + num + " final hand is: "+ returnHand().toString());
+                        monitor.addWinner(num);
+                        break;
+                    }
+                    if (monitor.isWon == true){
+                        System.out.println("Player " + monitor.winner + " has informed player " + num + " that "+ monitor.winner + " has won");
+                        System.out.println("player " + num + " exits ");
+                        System.out.println("player " + num + " final hand is: "+ returnHand().toString());
+                        break;
+                    }
+                }
+
+        }
+
+    }
 
     //Methods : Check for winning hand, draw card from left (their num) discard to right (num + 1, or 1)
     //Must discard non prefered cards (Player 1 will discard card 2)
 
 }
 
+class Monitor{
+    boolean isWon;
+    int winner;
+    public Monitor(){
+        isWon = false;
+    }
+
+    public void addWinner(int newWinner){
+        winner = newWinner;
+        isWon = true;}
+}
+
 class Card{
+    int cardNum;
+    public Card(int cardNum){this.cardNum = cardNum;}
     //For thread safty the instance methods here must be syncronised
 
 }
 
 class CardDeck{
-
-}
-
-class Moniter{
-    int player;
-    public Moniter(int player){
-        this.player = player;
-    }
-
-    public void changePlayer(int player){this.player = player;}
+    int deckNum;
+    List<Card> cards = new ArrayList<Card>();
+    public CardDeck(int deckNum, List<Card> cards){this.deckNum = deckNum; this.cards = cards;}
+    public void addCardToDeck(Card card){cards.add(card); System.out.println("Deck "+ deckNum + " is adding the card " + card.cardNum);}
+    public Card removeCardFromDeck(){ System.out.println("Deck "+ deckNum + " is removing a card"); return cards.remove(0);}
 }
