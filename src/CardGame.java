@@ -1,6 +1,5 @@
+import java.io.*;
 import java.util.*;
-import java.io.File;
-import java.io.FileNotFoundException;
 
 public class CardGame{
 
@@ -10,23 +9,22 @@ public class CardGame{
         //Winning?
         //Restart thread
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws IOException {
         //needs number of players
-        Scanner scan = new Scanner(System.in);
+        Scanner scanInt = new Scanner(System.in);
+        Scanner scanString = new Scanner(System.in);
         System.out.println("Please enter then number of players");
-        int numberOfPlayers = scan.nextInt();
-        Player players[] = new Player[numberOfPlayers];
+        int numberOfPlayers = scanInt.nextInt();
+        writeFile(numberOfPlayers);
         //Location of valid pack
-        //System.out.println("Please enter location of pack to load");
-        //String location = scan.nextLine();
-        List<Integer> pack = ReadFileFake(numberOfPlayers);
+        System.out.println("Please enter location of pack to load");
+        String location = scanString.nextLine();
         //Distribute 4 cards to each player, round robin
-
         //Fill decks
         //Start threads for players
         CardDeck decksOfCards[] = new CardDeck[numberOfPlayers]; //Needs looking at as to wether it should be of type Card or Deck of cards?
         Player threads[] = new Player[numberOfPlayers];
-        List<List<Card>> listsOFDeckNums = CreateDecksNums(numberOfPlayers);
+        List<List<Card>> listsOFDeckNums = CreateDecksNums(location, numberOfPlayers);
         Monitor monitor = new Monitor();
         //Needs to be changed into a round robbin
         for (int i = 0; i < numberOfPlayers; i++) {
@@ -44,8 +42,8 @@ public class CardGame{
             player.start();
         }
     }
-    public static List<List<Card>> CreateDecksNums(int numOfDecks){
-        List<Integer> pack = ReadFileFake(numOfDecks);
+    public static List<List<Card>> CreateDecksNums(String fileName, int numOfDecks){
+        List<Integer> pack = ReadFile(fileName);
         List<List<Card>> listOFDeckNums = new ArrayList<List<Card>>();
         for (int i = 0; i < numOfDecks*2; i++) {
             List<Card> deckNums = new ArrayList<Card>();
@@ -56,30 +54,33 @@ public class CardGame{
         }
         return  listOFDeckNums;
     }
-    //For testing
-    public static List<Integer> ReadFileFake(int num){
+    //Writes to a file newline list of random ints 
+    public static void writeFile(int num) throws IOException {
+        File myObj = new File("path");
+        myObj.createNewFile();
+        BufferedWriter writer = new BufferedWriter(new FileWriter("inputPack.txt"));
         Random random = new Random();
-        List<Integer> pack = new ArrayList<Integer>();
         for (int i = 0; i < (8*num); i++) {
-            pack.add(random.nextInt(10));
+            writer.write(String.valueOf(random.nextInt(10)));
+            writer.newLine();
         }
-        return pack;
+        writer.close();
     }
-    //Not needed yet
-    public static Queue<String> ReadFile(String fileName) {
-        Queue<String> queue = new LinkedList<String>();
+
+    //Reads in file from user input filename
+    public static List<Integer> ReadFile(String fileName) {
+        List<Integer> list = new ArrayList<Integer>();
         try {
-            File myObj = new File(fileName);
-            Scanner myReader = new Scanner(myObj);
-            while (myReader.hasNextLine()) {
-                queue.add(myReader.nextLine());
+            Scanner scanner = new Scanner(new FileInputStream(fileName));
+            while (scanner.hasNextLine()) {
+                list.add(Integer.parseInt(scanner.nextLine()));
             }
-            myReader.close();
+            scanner.close();
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-        return queue;
+        return list;
     }
 }
 
