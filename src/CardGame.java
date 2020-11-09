@@ -149,7 +149,7 @@ class Player implements Runnable {
                         }
                     }
                     if (cards.size() == 5){
-                        Card cardToRemove = cards.remove(0);
+                        Card cardToRemove = cards.remove(ChooseCardToRemove());
                         rightDeck.addCardToDeck(cardToRemove);
                         System.out.println("player "+ num + " discards a " + cardToRemove.cardNum + " to deck " + rightDeck.deckNum);
                         monitor.notifyAll();
@@ -174,6 +174,14 @@ class Player implements Runnable {
 
         }
 
+    }
+    private int ChooseCardToRemove(){
+        int count = 0;
+        for (Card card: this.cards) {
+            if (card.cardNum != this.num){return count;}
+            else {count = count + 1;}
+        }
+        return count;
     }
 
     //Methods : Check for winning hand, draw card from left (their num) discard to right (num + 1, or 1)
