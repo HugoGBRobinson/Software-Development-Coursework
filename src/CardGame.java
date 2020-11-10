@@ -54,11 +54,11 @@ public class CardGame{
         }
         return  listOFDeckNums;
     }
-    //Writes to a file newline list of random ints 
+    //Writes to a file newline list of random ints
     public static void writeFile(int num) throws IOException {
         File myObj = new File("path");
         myObj.createNewFile();
-        BufferedWriter writer = new BufferedWriter(new FileWriter("inputPack.txt"));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("testPack.txt"));
         Random random = new Random();
         for (int i = 0; i < (8*num); i++) {
             writer.write(String.valueOf(random.nextInt(10)));
