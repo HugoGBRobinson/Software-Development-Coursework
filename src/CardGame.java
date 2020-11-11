@@ -58,7 +58,18 @@ public class CardGame{
     public static void writeFile(int num) throws IOException {
         File myObj = new File("path");
         myObj.createNewFile();
-        BufferedWriter writer = new BufferedWriter(new FileWriter("testPack.txt"));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("inputPack.txt"));
+        Random random = new Random();
+        for (int i = 0; i < (8*num); i++) {
+            writer.write(String.valueOf(random.nextInt(10)));
+            writer.newLine();
+        }
+        writer.close();
+    }
+    public static void writeFile(int num, String filename) throws IOException {
+        File myObj = new File("path");
+        myObj.createNewFile();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
         Random random = new Random();
         for (int i = 0; i < (8*num); i++) {
             writer.write(String.valueOf(random.nextInt(10)));
@@ -205,7 +216,6 @@ class Monitor{
 class Card{
     int cardNum;
     public Card(int cardNum){this.cardNum = cardNum;}
-    //For thread safty the instance methods here must be syncronised
 
 }
 
