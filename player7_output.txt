@@ -1,0 +1,16 @@
+Player 7 initial hand is [9, 5, 0, 6]
+player 7 draws a 8 from deck 6
+player 7 discards a 9 to deck 0
+player 7 current hand is [5, 0, 6, 8]
+player 7 draws a 9 from deck 6
+player 7 discards a 5 to deck 0
+player 7 current hand is [0, 6, 8, 9]
+player 7 draws a 1 from deck 6
+player 7 discards a 0 to deck 0
+player 7 current hand is [6, 8, 9, 1]
+player 7 draws a 5 from deck 6
+player 7 discards a 6 to deck 0
+player 7 current hand is [8, 9, 1, 5]
+Player 2 has informed player 7 that 2 has won
+player 7 exits 
+player 7 final hand is: [8, 9, 1, 5]

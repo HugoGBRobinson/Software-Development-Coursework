@@ -10,12 +10,12 @@ public class CardGame{
         int numberOfPlayers = scanInt.nextInt();
         writeFile(numberOfPlayers);
         //Location of valid pack
-        List<List<Card>> listsOFDeckNums = null;
+        List<Card> listsOfCards = null;
         while (true){
             System.out.println("Please enter location of pack to load");
             String location = scanString.nextLine();
-            listsOFDeckNums = CreateDecksNums(location, numberOfPlayers);
-            if (listsOFDeckNums != null){break;}
+            listsOfCards = NumTocard(location);
+            if (listsOfCards != null){break;}
             System.out.println("The file was not read correctly or does not exist, please enter it again");
         }
         
@@ -28,8 +28,8 @@ public class CardGame{
         }
         //Round robin dealing
         for (int i = 0; i < numberOfPlayers; i++) {
-            for (int j = 0; j < numberOfPlayers; j++) {
-                decksOfCards[j].addCardToDeck(listsOFDeckNums.get(i).remove(0));
+            for (int j = 0; j < 4; j++) {
+                decksOfCards[i].addCardToDeck(listsOfCards.remove(0));
             }
         }
         //Creates player objects and puts them in a list
@@ -38,9 +38,9 @@ public class CardGame{
             else {threads[i] = new Player(i+1, decksOfCards[i], decksOfCards[i+1],monitor);}
         }
         //Round robin dealing
-        for (int i = numberOfPlayers; i < numberOfPlayers * 2; i++) {
+        for (int i = 0; i < 4; i++) {
             for (int j = 0; j < numberOfPlayers; j++) {
-                threads[j].addCard(listsOFDeckNums.get(i).remove(0));
+                threads[j].addCard(listsOfCards.remove(0));
             }
         }
         //Makes and starts the threads
@@ -50,18 +50,14 @@ public class CardGame{
             player.start();
         }
     }
-    public static List<List<Card>> CreateDecksNums(String fileName, int numOfDecks){
+    public static List<Card> NumTocard(String fileName){
         List<Integer> pack = ReadFile(fileName);
         if (pack == null){return null;}
-        List<List<Card>> listOFDeckNums = new ArrayList<List<Card>>();
-        for (int i = 0; i < numOfDecks*2; i++) {
-            List<Card> deckNums = new ArrayList<Card>();
-            for (int x = 0; x < 4; x++) {
-                deckNums.add(new Card(pack.remove(0)));
-            }
-            listOFDeckNums.add(deckNums);
+        List<Card> listOfCards = new ArrayList<Card>();
+        for (int num:pack) {
+            listOfCards.add(new Card(num));
         }
-        return  listOFDeckNums;
+        return listOfCards;
     }
     //Writes to a file newline list of random ints
     public static void writeFile(int num) throws IOException {

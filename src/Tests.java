@@ -127,11 +127,11 @@ public class Tests {
     public void ReadFileTest() {
         Assert.assertNull(CardGame.ReadFile("errorPack.txt"));
     }
-    //Tests if the Create Deck Nums function works correctly 
+    //Tests if the Create Deck Nums function works correctly
     @Test
-    public void CreateDeckNumsTests() {
-        List<List<Card>> listsOFDeckNums = CardGame.CreateDecksNums("testPack.txt", 4);
-        Assert.assertEquals(8, listsOFDeckNums.size());
+    public void NumToCardTests() {
+        List<Card> listsOFDeckNums = CardGame.NumTocard("testPack.txt");
+        Assert.assertEquals(32, listsOFDeckNums.size());
     }
 }
 
