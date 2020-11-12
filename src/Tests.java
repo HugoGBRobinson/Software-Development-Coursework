@@ -74,39 +74,35 @@ public class Tests {
     private Method m;
     //Player class
     //Checks if all elements are equal method
-    @Before
-    public void PlayerCheckIfAllElementsAreEqualSetUp() throws Exception {
-        m = player.getClass().getDeclaredMethod("checkIfAllElementsAreEqual");
-        m.setAccessible(true);
-    }
     @Test
     public void PlayerCheckIfAllElementsAreEqualTests() throws Exception {
+        m = player.getClass().getDeclaredMethod("checkIfAllElementsAreEqual");
+        m.setAccessible(true);
         Assert.assertEquals(true, m.invoke(player));
     }
     //Checks if a player has won method
-    @Before
-    public void PlayerIsWonSetUp() throws Exception {
-        m = player.getClass().getDeclaredMethod("isWon");
-        m.setAccessible(true);
-    }
     @Test
     public void PlayerIsWonTests() throws Exception {
+        m = player.getClass().getDeclaredMethod("isWon");
+        m.setAccessible(true);
         Assert.assertEquals(true, m.invoke(player));
     }
     //Checks the return hand method
-    @Before
-    public void PlayerReturnHandSetUp() throws Exception {
-        m = player.getClass().getDeclaredMethod("returnHand");
-        m.setAccessible(true);
-    }
+    //Need to change
     @Test
     public void PlayerReturnHandTests() throws Exception {
-        List<Card> expectedHand = new ArrayList<Card>();
-        expectedHand.add(new Card(1));
-        expectedHand.add(new Card(1));
-        expectedHand.add(new Card(1));
-        expectedHand.add(new Card(1));
-        Assert.assertNotNull(m.invoke(player));
+        m = player.getClass().getDeclaredMethod("returnHand");
+        m.setAccessible(true);
+        List<Integer> expectedHand = new ArrayList<Integer>();
+        expectedHand.add(1);
+        expectedHand.add(1);
+        expectedHand.add(1);
+        expectedHand.add(1);
+
+        List<Integer> actualList = (List<Integer>) m.invoke(player);
+        for (int i = 0; i < expectedHand.size(); i++) {
+            Assert.assertEquals(expectedHand.get(i),actualList.get(i));
+        }
     }
     //Tests is the thread can start properly
     @Test
@@ -115,7 +111,7 @@ public class Tests {
         player.run();
         Assert.assertEquals(true, Thread.currentThread().isAlive());
     }
-    //Main
+    //CardGame
     //Tests if a pack is created correctly
     @Test
     public void WriteFileTests() throws IOException {
@@ -127,10 +123,10 @@ public class Tests {
     public void ReadFileTest() {
         Assert.assertNull(CardGame.ReadFile("errorPack.txt"));
     }
-    //Tests if the Create Deck Nums function works correctly
+    //Tests if the Num to Card function works correctly
     @Test
     public void NumToCardTests() {
-        List<Card> listsOFDeckNums = CardGame.NumTocard("testPack.txt");
+        List<Card> listsOFDeckNums = CardGame.NumToCard("testPack.txt");
         Assert.assertEquals(32, listsOFDeckNums.size());
     }
 }

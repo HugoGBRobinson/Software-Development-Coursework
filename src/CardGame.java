@@ -1,26 +1,45 @@
 import java.io.*;
 import java.util.*;
 
+//Runs the card game
 public class CardGame{
     public static void main(String[] args) throws IOException {
-        //needs number of players
+        //Needs number of players
         Scanner scanInt = new Scanner(System.in);
         Scanner scanString = new Scanner(System.in);
+        int numberOfPlayers = 0;
         System.out.println("Please enter then number of players");
-        int numberOfPlayers = scanInt.nextInt();
+        while (true){
+            try {
+                numberOfPlayers = scanInt.nextInt();
+                if (numberOfPlayers > 0) {break;}
+            }catch (Exception e){}
+            finally {
+                scanInt.nextLine();
+            }
+            System.out.println("Please enter a non-negative integer for the number of players");
+        }
+
         writeFile(numberOfPlayers);
         //Location of valid pack
         List<Card> listsOfCards = null;
+        System.out.println("Please enter location of pack to load");
         while (true){
-            System.out.println("Please enter location of pack to load");
             String location = scanString.nextLine();
-            listsOfCards = NumTocard(location);
-            if (listsOfCards != null){break;}
+            listsOfCards = NumToCard(location);
+            if (listsOfCards != null){break;}else{}
+            if (listsOfCards == null){}else{
+                List<Boolean> isGreaterThan0 = new ArrayList<Boolean>();
+                for (Card card: listsOfCards) {
+                    if (card.cardNum >= 1){isGreaterThan0.add(true);}else{isGreaterThan0.add(false);}
+                }
+                if (isGreaterThan0.contains(false)){}else{break;}
+            }
             System.out.println("The file was not read correctly or does not exist, please enter it again");
         }
         
         //Distribute 4 cards to each player, round robin
-        CardDeck decksOfCards[] = new CardDeck[numberOfPlayers]; //Needs looking at as to wether it should be of type Card or Deck of cards?
+        CardDeck decksOfCards[] = new CardDeck[numberOfPlayers];
         Player threads[] = new Player[numberOfPlayers];
         Monitor monitor = new Monitor();
         for (int i = 0; i < numberOfPlayers; i++) {
@@ -50,7 +69,7 @@ public class CardGame{
             player.start();
         }
     }
-    public static List<Card> NumTocard(String fileName){
+    public static List<Card> NumToCard(String fileName){
         List<Integer> pack = ReadFile(fileName);
         if (pack == null){return null;}
         List<Card> listOfCards = new ArrayList<Card>();
@@ -66,7 +85,7 @@ public class CardGame{
         BufferedWriter writer = new BufferedWriter(new FileWriter("inputPack.txt"));
         Random random = new Random();
         for (int i = 0; i < (8*num); i++) {
-            writer.write(String.valueOf(random.nextInt(10)));
+            writer.write(String.valueOf(random.nextInt(10 - 1)+ 1));
             writer.newLine();
         }
         writer.close();
@@ -78,7 +97,7 @@ public class CardGame{
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
         Random random = new Random();
         for (int i = 0; i < (8*num); i++) {
-            writer.write(String.valueOf(random.nextInt(10)));
+            writer.write(String.valueOf(random.nextInt(10 - 1) + 1));
             writer.newLine();
         }
         writer.close();
@@ -94,7 +113,6 @@ public class CardGame{
                 }
                 scanner.close();
             } catch (FileNotFoundException e) {
-                System.out.println("Cannot find file, please try again");
                 return null;
             }
         return list;

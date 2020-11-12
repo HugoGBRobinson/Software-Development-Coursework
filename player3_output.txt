@@ -1,2 +1,40 @@
-Player 3 initial hand is [1, 9, 9, 6]
-Player 2 has informed player 3 that they have won
+Player 3 initial hand is [5, 7, 6, 1]
+player 3 draws a 9 from deck 2
+player 3 discards a 5 to deck 3
+player 3 current hand is [7, 6, 1, 9]
+player 3 draws a 3 from deck 2
+player 3 discards a 7 to deck 3
+player 3 current hand is [6, 1, 9, 3]
+player 3 draws a 2 from deck 2
+player 3 discards a 6 to deck 3
+player 3 current hand is [1, 9, 3, 2]
+player 3 draws a 6 from deck 2
+player 3 discards a 1 to deck 3
+player 3 current hand is [9, 3, 2, 6]
+player 3 draws a 1 from deck 2
+player 3 discards a 9 to deck 3
+player 3 current hand is [3, 2, 6, 1]
+player 3 draws a 4 from deck 2
+player 3 discards a 2 to deck 3
+player 3 current hand is [3, 6, 1, 4]
+player 3 draws a 3 from deck 2
+player 3 discards a 6 to deck 3
+player 3 current hand is [3, 1, 4, 3]
+player 3 draws a 4 from deck 2
+player 3 discards a 1 to deck 3
+player 3 current hand is [3, 4, 3, 4]
+player 3 draws a 3 from deck 2
+player 3 discards a 4 to deck 3
+player 3 current hand is [3, 3, 4, 3]
+player 3 draws a 1 from deck 2
+player 3 discards a 4 to deck 3
+player 3 current hand is [3, 3, 3, 1]
+player 3 draws a 7 from deck 2
+player 3 discards a 1 to deck 3
+player 3 current hand is [3, 3, 3, 7]
+player 3 draws a 7 from deck 2
+player 3 discards a 7 to deck 3
+player 3 current hand is [3, 3, 3, 7]
+Player 1 has informed player 3 that 1 has won
+player 3 exits 
+player 3 final hand is: [3, 3, 3, 7]
